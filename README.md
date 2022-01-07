@@ -110,7 +110,11 @@ type exit to exit ssh
 ## Creating repo (since we dont have a fancy GUI we need to do this manually)
 ```
 Note: running this code on server and dont forget to change the project name <project-repo>
+sudo chown -R git.git /home/git/
 cd /home/git
+mkdir -p repositories
+sudo chown -R git.git /home/git/repositories/
+cd repositories
 mkdir -p <project-repo>.git (yes it is forder)
 cd /home/git/<project-repo>.git
 
@@ -154,21 +158,67 @@ Thats it for the server
 7) Adding git remote (When you are at home)
   
 ```
-  git remote add origin_home ssh://git@<local-ip-address>/home/git/<project-repo>.git
+  git remote add origin_home ssh://git@<local-ip-address>/home/git/repositories/<project-repo>.git
 ```
   
 7.1) Addiing git remote (When you are outside)
   you must know your internet provider public IP address and must port forward port 22 on router
 ```
-  git remote add origin_outside ssh://git@<public-ip-address>/home/git/<project-repo>.git
+  git remote add origin_outside ssh://git@<public-ip-address>/home/git/repositories/<project-repo>.git
 ```
 
 
 ## Cloning your project to another machine
 ### dont forget to add and create keygen to authorized_keys if the machine is new
 ```
-  git clone git@<local-or-public-ip-address>:<project-repo>.git .
+  git clone git@<local-or-public-ip-address>:/home/git/repositories/<project-repo>.git .
 ```
+  
+  
+## Setup your NAS NFS to your Github server 
+1) On this part im using QNAP NAS but its the same configuration to most NAS out there
+  - enable NFS shares on your QNAP NAS.
+  - On the QNAP you should start the Control panel, go to Privilege, Shared folders. 
+  - There you see the shared folders. Then press the button Edit Shared Folder Permission.
+  - Select permission type: NFS
+  - Select the shared folder you want to share using NFS and choose to mount it read-only or read-write and press Apply. 
+
+2) On your Github server run
+```
+sudo apt install nfs-common
+showmount -e <nas-ip-address> #it will show all your shared folder on NAS
+```
+3) Mount the shared folder to your git directory
+```
+sudo mount -t nfs <nas-ip-address>:/<nas-directory> /home/git/
+```
+4) Configure Automount
+```
+sudo nano /etc/fstab
+  
+# type in:
+<nas-ip-address>:/<nas-directory> /home/git/ nfs defaults,bg 0 0
+```
+  
+# If you want to unmount
+```
+sudo umount <directory> # yes it is umount without N
+```
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
   
   
   
